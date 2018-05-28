@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.td.dao.pro.TDprojectcontentDao">
+    
+	<sql id="tDprojectcontentColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.pic AS "pic",
+		a.title AS "title",
+		a.content AS "content",
+		a.starttime AS "starttime",
+		a.endtime AS "endtime",
+		a.sort AS "sort",
+		a.address AS "address",
+		a.typeid AS "typeid"
+	</sql>
+	
+	<sql id="tDprojectcontentJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TDprojectcontent" >
+		SELECT b.name AS "typename",
+			<include refid="tDprojectcontentColumns"/>
+		FROM td_projectcontent a left join td_projecttype b on a.typeid=b.id
+		<include refid="tDprojectcontentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TDprojectcontent" >
+		SELECT b.name AS "typename",
+			<include refid="tDprojectcontentColumns"/>
+		FROM td_projectcontent a left join td_projecttype b on a.typeid=b.id
+		<include refid="tDprojectcontentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="typeid != null and typeid != ''">
+			   AND a.typeid = #{typeid}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title  LIKE CONCAT(CONCAT('%', #{title}), '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY b.sort,a.sort DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TDprojectcontent" >
+		SELECT 
+			<include refid="tDprojectcontentColumns"/>
+		FROM td_projectcontent a
+		<include refid="tDprojectcontentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO td_projectcontent(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			pic,
+			title,
+			content,
+			starttime,
+			endtime,
+			sort,
+			address,
+			typeid
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{pic},
+			#{title},
+			#{content},
+			#{starttime},
+			#{endtime},
+			#{sort},
+			#{address},
+			#{typeid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE td_projectcontent SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			pic = #{pic},
+			title = #{title},
+			content = #{content},
+			starttime = #{starttime},
+			endtime = #{endtime},
+			sort = #{sort},
+			address = #{address},
+			typeid = #{typeid}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM td_projectcontent
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE td_projectcontent SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TDprojectcontent" statementType="STATEMENT">
+		select * FROM td_projectcontent  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

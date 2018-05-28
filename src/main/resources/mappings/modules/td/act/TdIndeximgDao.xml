@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.td.dao.act.TdIndeximgDao">
+    
+	<sql id="tdIndeximgColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.img AS "img",
+		a.urltype AS "urltype",
+		a.sort AS "sort"
+	</sql>
+	
+	<sql id="tdIndeximgJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TdIndeximg" >
+		SELECT 
+			<include refid="tdIndeximgColumns"/>
+		FROM td_indeximg a
+		<include refid="tdIndeximgJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TdIndeximg" >
+		SELECT 
+			<include refid="tdIndeximgColumns"/>
+		FROM td_indeximg a
+		<include refid="tdIndeximgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TdIndeximg" >
+		SELECT 
+			<include refid="tdIndeximgColumns"/>
+		FROM td_indeximg a
+		<include refid="tdIndeximgJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO td_indeximg(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			img,
+			urltype,
+			sort
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{img},
+			#{urltype},
+			#{sort}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE td_indeximg SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			img = #{img},
+			urltype = #{urltype},
+			sort = #{sort}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM td_indeximg
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE td_indeximg SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TdIndeximg" statementType="STATEMENT">
+		select * FROM td_indeximg  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>

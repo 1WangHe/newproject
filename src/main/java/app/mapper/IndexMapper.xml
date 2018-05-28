@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="app.mapper.IndexMapper">
+    <sql id="indeximgcolumns">
+        a.id AS "id",
+        a.img AS "img",
+        a.urltype AS "modeltype"
+    </sql>
+    <select id="findindexlist" resultType="app.entity.IndexImg">
+        select 
+        <include refid="indeximgcolumns"/>
+        from td_indeximg a 
+        order by sort ASC 
+        limit #{pagestart},#{pagesize}  
+    </select>
+    
+</mapper>

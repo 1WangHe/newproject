@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeeplus.modules.td.dao.act.TdActivitycontentDao">
+    
+	<sql id="tdActivitycontentColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.pic AS "pic",
+		a.title AS "title",
+		a.content AS "content",
+		a.number AS "number",
+		a.typeid AS "typeid",
+		a.sort AS "sort",
+		a.starttime AS "starttime",
+		a.endtime AS "endtime"
+	</sql>
+	
+	<sql id="tdActivitycontentJoins">
+	</sql>
+	
+    
+	<select id="get" resultType="TdActivitycontent" >
+		SELECT b.name AS "typename",
+			<include refid="tdActivitycontentColumns"/>
+		FROM td_activitycontent a left join td_activitytype b on a.typeid=b.id
+		<include refid="tdActivitycontentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TdActivitycontent" >
+		SELECT b.name AS "typename",
+			<include refid="tdActivitycontentColumns"/>
+		FROM td_activitycontent a left join td_activitytype b on a.typeid=b.id
+		<include refid="tdActivitycontentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="typeid != null and typeid != ''">
+			   AND a.typeid = #{typeid}
+			</if>
+			<if test="title != null and title != ''">
+				AND a.title  LIKE CONCAT(CONCAT('%', #{title}), '%')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY b.sort,a.sort DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TdActivitycontent" >
+		SELECT 
+			<include refid="tdActivitycontentColumns"/>
+		FROM td_activitycontent a
+		<include refid="tdActivitycontentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO td_activitycontent(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			pic,
+			title,
+			content,
+			number,
+			typeid,
+			sort,
+			starttime,
+			endtime
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{pic},
+			#{title},
+			#{content},
+			#{number},
+			#{typeid},
+			#{sort},
+			#{starttime},
+			#{endtime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE td_activitycontent SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			pic = #{pic},
+			title = #{title},
+			content = #{content},
+			number = #{number},
+			typeid = #{typeid},
+			sort = #{sort},
+			starttime = #{starttime},
+			endtime = #{endtime}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!--物理删除-->
+	<update id="delete">
+		DELETE FROM td_activitycontent
+		WHERE id = #{id}
+	</update>
+	
+	<!--逻辑删除-->
+	<update id="deleteByLogic">
+		UPDATE td_activitycontent SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<!-- 根据实体名称和字段名称和字段值获取唯一记录 -->
+	<select id="findUniqueByProperty" resultType="TdActivitycontent" statementType="STATEMENT">
+		select * FROM td_activitycontent  where ${propertyName} = '${value}'
+	</select>
+	
+</mapper>
